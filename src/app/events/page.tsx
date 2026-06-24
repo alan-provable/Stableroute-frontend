@@ -28,27 +28,30 @@ export default function EventsPage() {
     >
       <h1 className="text-3xl font-semibold tracking-tight">Event log</h1>
       {error && <p role="alert" className="text-sm text-rose-600">{error}</p>}
-      {items && items.length === 0 && (
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">No events.</p>
-      )}
-      {items && items.length > 0 && (
-        <ol className="flex flex-col gap-2">
-          {items.map((e) => (
-            <li
-              key={e.id}
-              className="rounded border border-neutral-200 p-3 font-mono text-xs dark:border-neutral-800"
-            >
-              <div className="flex justify-between text-neutral-500">
-                <span>{e.type}</span>
-                <span>{new Date(e.ts).toISOString()}</span>
-              </div>
-              <pre className="mt-2 whitespace-pre-wrap break-words">
-                {JSON.stringify(e.payload, null, 2)}
-              </pre>
-            </li>
-          ))}
-        </ol>
-      )}
+      <section aria-live="polite" aria-atomic="true" className="contents">
+        {!items && !error && <p>Loading…</p>}
+        {items && items.length === 0 && (
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">No events.</p>
+        )}
+        {items && items.length > 0 && (
+          <ol className="flex flex-col gap-2">
+            {items.map((e) => (
+              <li
+                key={e.id}
+                className="rounded border border-neutral-200 p-3 font-mono text-xs dark:border-neutral-800"
+              >
+                <div className="flex justify-between text-neutral-500">
+                  <span>{e.type}</span>
+                  <span>{new Date(e.ts).toISOString()}</span>
+                </div>
+                <pre className="mt-2 whitespace-pre-wrap break-words">
+                  {JSON.stringify(e.payload, null, 2)}
+                </pre>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
     </main>
   );
 }
