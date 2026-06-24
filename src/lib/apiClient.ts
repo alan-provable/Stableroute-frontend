@@ -16,9 +16,19 @@ export async function apiFetch<T>(
     ...init,
   });
   if (res.status === 204) return undefined as T;
-  const body = (await res.json()) as T | ApiError;
+  const text = await res.text();
+  let body: T | ApiError | undefined;
+  if (text) {
+    try {
+      body = JSON.parse(text) as T | ApiError;
+    } catch {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      throw new Error("Invalid JSON response");
+    }
+  }
   if (!res.ok) {
-    throw Object.assign(new Error((body as ApiError).message), body as ApiError);
+    const msg = (body as ApiError | undefined)?.message ?? `HTTP ${res.status}`;
+    throw Object.assign(new Error(msg), body ?? {});
   }
   return body as T;
 }
