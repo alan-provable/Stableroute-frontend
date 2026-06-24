@@ -67,25 +67,31 @@ export default function WebhooksPage() {
         </button>
         {error && <p role="alert" className="text-sm text-rose-600">{error}</p>}
       </form>
-      {items && (
-        <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
-          {items.map((w) => (
-            <li key={w.id} className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-medium break-all">{w.url}</p>
-                <p className="text-xs text-neutral-500">{w.events.join(", ")}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => apiDelete(`/api/v1/webhooks/${w.id}`).then(() => load())}
-                className="rounded border border-neutral-300 px-3 py-1 text-xs hover:border-rose-500 hover:text-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 dark:border-neutral-700"
-              >
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {!items && !error && <p>Loading…</p>}
+      <section aria-live="polite" aria-atomic="true" className="contents">
+        {items && items.length === 0 && (
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">No webhooks registered.</p>
+        )}
+        {items && items.length > 0 && (
+          <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
+            {items.map((w) => (
+              <li key={w.id} className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium break-all">{w.url}</p>
+                  <p className="text-xs text-neutral-500">{w.events.join(", ")}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => apiDelete(`/api/v1/webhooks/${w.id}`).then(() => load())}
+                  className="rounded border border-neutral-300 px-3 py-1 text-xs hover:border-rose-500 hover:text-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 dark:border-neutral-700"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }

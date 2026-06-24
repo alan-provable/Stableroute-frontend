@@ -36,21 +36,23 @@ export default function PairsPage() {
           {error}
         </p>
       )}
-      {!pairs && !error && <p>Loading…</p>}
-      {pairs && pairs.length === 0 && (
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          No pairs registered yet.
-        </p>
-      )}
-      {pairs && pairs.length > 0 && (
-        <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
-          {pairs.map((p) => (
-            <li key={`${p.source}::${p.destination}`} className="py-3 font-mono text-sm">
-              {p.source} → {p.destination}
-            </li>
-          ))}
-        </ul>
-      )}
+      <section aria-live="polite" aria-atomic="true" className="contents">
+        {!pairs && !error && <p>Loading…</p>}
+        {pairs && pairs.length === 0 && (
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            No pairs registered yet.
+          </p>
+        )}
+        {pairs && pairs.length > 0 && (
+          <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
+            {pairs.map((p) => (
+              <li key={`${p.source}::${p.destination}`} className="py-3 font-mono text-sm">
+                {p.source} → {p.destination}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   );
 }
