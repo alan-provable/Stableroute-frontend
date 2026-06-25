@@ -1,13 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import StatsPage from "./page";
 
-const mockFetch = (data: unknown) =>
-  jest.spyOn(globalThis, "fetch").mockImplementation(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(data),
-    } as Response)
-  );
+const mockFetch = (data: unknown) => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    text: () => Promise.resolve(JSON.stringify(data)),
+  } as unknown as Response);
+};
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -42,11 +41,11 @@ describe("StatsPage", () => {
   });
 
   it("renders error message on fetch failure", async () => {
-    jest.spyOn(globalThis, "fetch").mockImplementation(() =>
-      Promise.reject(new Error("Network error"))
-    );
+    global.fetch = jest.fn().mockRejectedValue(new Error("Network error"));
     render(<StatsPage />);
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent(/network error/i);
+    await waitFor(() => {
+      const alert = screen.getByRole("alert");
+      expect(alert).toHaveTextContent(/network error/i);
+    });
   });
 });
