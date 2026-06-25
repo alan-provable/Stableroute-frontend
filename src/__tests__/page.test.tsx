@@ -25,9 +25,11 @@ describe("Home", () => {
 
   it("renders links for all dashboard routes", () => {
     render(<Home />);
+    const links = screen.getAllByRole("link", { hidden: true });
+    expect(links).toHaveLength(routes.length);
     for (const route of routes) {
-      const link = screen.getByRole("link", { name: new RegExp(route.replace("/", ""), "i") });
-      expect(link).toBeInTheDocument();
+      const link = links.find((l) => l.getAttribute("href") === route);
+      expect(link).toBeTruthy();
       expect(link).toHaveAttribute("href", route);
     }
   });
