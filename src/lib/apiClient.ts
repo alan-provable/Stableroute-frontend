@@ -7,6 +7,17 @@ export type ApiError = {
   requestId?: string;
 };
 
+type AuthErrorHandler = (status: 401 | 403) => void;
+let _authErrorHandler: AuthErrorHandler | null = null;
+
+/** Called once by <ApiAuthGuard> when it mounts inside <ToastProvider>. */
+export function registerAuthErrorHandler(handler: AuthErrorHandler): () => void {
+  _authErrorHandler = handler;
+  return () => {
+    if (_authErrorHandler === handler) _authErrorHandler = null;
+  };
+}
+
 export async function apiFetch<T>(
   path: string,
   init: RequestInit = {}
@@ -27,8 +38,12 @@ export async function apiFetch<T>(
     }
   }
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      _authErrorHandler?.(res.status as 401 | 403);
+    }
     const msg = (body as ApiError | undefined)?.message ?? `HTTP ${res.status}`;
-    throw Object.assign(new Error(msg), body ?? {});
+    const err = Object.assign(new Error(msg), { status: res.status }, body ?? {});
+    throw err;
   }
   return body as T;
 }

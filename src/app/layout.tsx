@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ToastProvider } from "@/components/ToastProvider";
+import { ApiAuthGuard } from "@/components/ApiAuthGuard";
 
 export const metadata: Metadata = {
   title: {
@@ -38,6 +39,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <ToastProvider>
+          <ApiAuthGuard />
           <Header />
           {children}
           <Footer />
