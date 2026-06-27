@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import Home from "@/app/page";
+import nextConfig from "../../next.config";
 
 const routes = [
   "/quote", "/pairs", "/stats", "/admin",
@@ -39,5 +40,24 @@ describe("Home", () => {
     const main = screen.getByRole("main");
     expect(main).toHaveAttribute("id", "main-content");
     expect(main).toHaveAttribute("tabIndex", "-1");
+  });
+});
+
+describe("next.config security headers", () => {
+  it("applies baseline hardening headers to every route", async () => {
+    expect(nextConfig.headers).toBeDefined();
+
+    const rules = await nextConfig.headers!();
+    const catchAll = rules.find((rule) => rule.source === "/:path*");
+
+    expect(catchAll).toBeDefined();
+    expect(catchAll?.headers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ key: "X-Content-Type-Options", value: "nosniff" }),
+        expect.objectContaining({ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" }),
+        expect.objectContaining({ key: "X-Frame-Options", value: "DENY" }),
+        expect.objectContaining({ key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" }),
+      ]),
+    );
   });
 });
